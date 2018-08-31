@@ -30,6 +30,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/axgle/mahonia"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -109,6 +110,7 @@ type Options struct {
 	WriteConfig         bool   `long:"write-config" description:"save config for loaded configs + given command line arguments" json:"-"`
 	Zip                 bool   `short:"z" long:"zip" description:"search content of compressed .gz files (default: off)"`
 	NoZip               func() `short:"Z" long:"no-zip" description:"do not search content of compressed .gz files" json:"-"`
+	UseGbk              bool   `short:"g" long:"gbk" description:"if the character coding is GBK Code (default: false)" json:"-"`
 
 	FileConditions struct {
 		FileMatches     []string `long:"file-matches" description:"only show matches if file also matches PATTERN" value-name:"PATTERN"`
@@ -498,6 +500,13 @@ func (o *Options) checkFormats() error {
 	return nil
 }
 
+// for GBK is not supported in golang's regexp.
+func (o *Options) gbk2utf8(data string) string {
+	enc := mahonia.NewEncoder("UTF-8")
+	data = enc.ConvertString(data)
+	return data
+}
+
 // preparePattern adjusts a pattern to respect the ignore-case, literal and multiline options
 func (o *Options) preparePattern(pattern string) string {
 	if o.Literal {
@@ -513,6 +522,10 @@ func (o *Options) preparePattern(pattern string) string {
 	if o.Multiline {
 		pattern = "(?s)" + pattern
 	}
+	if o.UseGbk {
+		pattern = o.gbk2utf8(pattern)
+	}
+
 	return pattern
 }
 
