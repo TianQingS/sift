@@ -542,6 +542,9 @@ func getBeforeContextFromFile(target string, offset int64, start int) *string {
 	}
 	infile.Seek(seekPosition, 0)
 	reader := bufio.NewReader(infile)
+	if options.UseGbk {
+		reader = Utf8Reader(reader).(*bufio.Reader)
+	}
 	buffer := make([]byte, count)
 	reader.Read(buffer)
 
@@ -575,6 +578,9 @@ func getAfterContextFromFile(target string, offset int64, end int) *string {
 	seekPosition := offset + int64(end)
 	infile.Seek(seekPosition, 0)
 	reader := bufio.NewReader(infile)
+	if options.UseGbk {
+		reader = Utf8Reader(reader).(*bufio.Reader)
+	}
 	buffer := make([]byte, InputBlockSize)
 	length, _ := reader.Read(buffer)
 

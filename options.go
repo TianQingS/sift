@@ -30,7 +30,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/axgle/mahonia"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -500,13 +499,6 @@ func (o *Options) checkFormats() error {
 	return nil
 }
 
-// for GBK is not supported in golang's regexp.
-func (o *Options) gbk2utf8(data string) string {
-	enc := mahonia.NewEncoder("UTF-8")
-	data = enc.ConvertString(data)
-	return data
-}
-
 // preparePattern adjusts a pattern to respect the ignore-case, literal and multiline options
 func (o *Options) preparePattern(pattern string) string {
 	if o.Literal {
@@ -523,7 +515,7 @@ func (o *Options) preparePattern(pattern string) string {
 		pattern = "(?s)" + pattern
 	}
 	if o.UseGbk {
-		pattern = o.gbk2utf8(pattern)
+		pattern = ToUtf8(pattern)
 	}
 
 	return pattern

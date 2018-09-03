@@ -431,6 +431,9 @@ func processFileTargets() {
 			reader = infile
 		}
 
+		if options.UseGbk {
+			reader = Utf8Reader(reader)
+		}
 		if options.InvertMatch {
 			err = processReaderInvertMatch(reader, matchRegexes, filepath)
 		} else {
@@ -483,6 +486,9 @@ func processNetworkTarget(target string) {
 
 	dataBuffer := make([]byte, InputBlockSize)
 	testBuffer := make([]byte, InputBlockSize)
+	if options.UseGbk {
+		reader = Utf8Reader(reader)
+	}
 	err = processReader(reader, matchRegexes, dataBuffer, testBuffer, target)
 	if err != nil {
 		errorLogger.Printf("error processing data from '%s'\n", target)
