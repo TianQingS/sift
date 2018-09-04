@@ -7,6 +7,7 @@ import (
 
 	"github.com/axgle/mahonia"
 	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 )
@@ -21,15 +22,25 @@ func ToUtf8(data string) string {
 // transform io.reader to utf8 reader.
 func Utf8ReaderAny(reader io.Reader) io.Reader {
 	bytes, err := bufio.NewReader(reader).Peek(1024)
-	if err == nil {
+	if err == nil || err.Error() == "EOF" {
 		e, _, _ := charset.DetermineEncoding(bytes, "")
+		if e == charmap.Windows1252 {
+			e = simplifiedchinese.GBK
+		}
 		reader = transform.NewReader(reader, e.NewDecoder())
 	}
 	return reader
 }
 
 // transform gbk reader to utf8 reader.
+func Utf8ReaderGbk(reader io.Reader) io.Reader {
+	reader = transform.NewReader(reader, simplifiedchinese.GBK.NewDecoder())
+	return reader
+}
+
 func Utf8Reader(reader io.Reader) io.Reader {
-	reader = transform.NewReader(reader, simplifiedchinese.GB18030.NewDecoder())
+	if options.UseGbk {
+		return Utf8ReaderGbk(reader)
+	}
 	return reader
 }

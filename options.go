@@ -514,9 +514,7 @@ func (o *Options) preparePattern(pattern string) string {
 	if o.Multiline {
 		pattern = "(?s)" + pattern
 	}
-	if o.UseGbk {
-		pattern = ToUtf8(pattern)
-	}
+	pattern = ToUtf8(pattern)
 
 	return pattern
 }
