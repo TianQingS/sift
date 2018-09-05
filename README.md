@@ -115,5 +115,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Local modification
+
 Add -g option to support Chinese-encoded file.
+
 Add -d option to support Chinese input on screen.
