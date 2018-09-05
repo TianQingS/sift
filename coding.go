@@ -12,10 +12,29 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// for gbk is not supported in golang's regexp.
-func ToUtf8(data string) string {
-	enc := mahonia.NewEncoder("UTF-8")
-	data = enc.ConvertString(data)
+// for only utf8 is supported in golang's regexp.
+func CheckToUtf8(data string) string {
+	switch options.CodingInput {
+	case "gbk":
+		dec := mahonia.NewDecoder("GBK")
+		data = dec.ConvertString(data)
+	}
+	switch options.Coding {
+	case "gbk":
+		enc := mahonia.NewEncoder("UTF-8")
+		data = enc.ConvertString(data)
+	}
+	return data
+}
+
+func CheckToGBK(data string) string {
+	switch options.CodingInput {
+	case "gbk":
+		dec := mahonia.NewDecoder("UTF-8")
+		data = dec.ConvertString(data)
+		enc := mahonia.NewEncoder("GBK")
+		data = enc.ConvertString(data)
+	}
 	return data
 }
 
@@ -39,7 +58,8 @@ func Utf8ReaderGbk(reader io.Reader) io.Reader {
 }
 
 func Utf8Reader(reader io.Reader) io.Reader {
-	if options.UseGbk {
+	switch options.Coding {
+	case "gbk":
 		return Utf8ReaderGbk(reader)
 	}
 	return reader

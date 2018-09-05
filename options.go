@@ -109,7 +109,8 @@ type Options struct {
 	WriteConfig         bool   `long:"write-config" description:"save config for loaded configs + given command line arguments" json:"-"`
 	Zip                 bool   `short:"z" long:"zip" description:"search content of compressed .gz files (default: off)"`
 	NoZip               func() `short:"Z" long:"no-zip" description:"do not search content of compressed .gz files" json:"-"`
-	UseGbk              bool   `short:"g" long:"gbk" description:"if the character coding is GBK Code (default: false)" json:"-"`
+	Coding              string `short:"g" long:"coding" description:"the character coding of the target file. " value-name:"gbk" json:"-"`
+	CodingInput         string `short:"d" long:"coding-input" description:"the input coding on screen. " value-name:"gbk" json:"-"`
 
 	FileConditions struct {
 		FileMatches     []string `long:"file-matches" description:"only show matches if file also matches PATTERN" value-name:"PATTERN"`
@@ -514,7 +515,7 @@ func (o *Options) preparePattern(pattern string) string {
 	if o.Multiline {
 		pattern = "(?s)" + pattern
 	}
-	pattern = ToUtf8(pattern)
+	pattern = CheckToUtf8(pattern)
 
 	return pattern
 }

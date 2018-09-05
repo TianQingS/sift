@@ -24,7 +24,7 @@ import (
 func resultHandler() {
 	for result := range global.resultsChan {
 		if options.TargetsOnly {
-			fmt.Println(result.target)
+			fmt.Println(CheckToGBK(result.target))
 			continue
 		}
 		global.totalTargetCount++
@@ -36,6 +36,7 @@ func resultHandler() {
 
 func writeOutput(format string, a ...interface{}) {
 	output := fmt.Sprintf(format, a...)
+	output = CheckToGBK(output)
 	_, err := global.outputFile.Write([]byte(output))
 	if err != nil {
 		errorLogger.Fatalln("cannot write to output file:", err)
