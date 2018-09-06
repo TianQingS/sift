@@ -313,6 +313,24 @@ func (o *Options) LoadConfigs(noConf bool, configFileArg string) {
 	}
 }
 
+// Check search pattern's encoding.
+func (o *Options) checkCoding(patterns []string) {
+	flag := true
+	switch o.Coding {
+	case "gbk":
+		for i := range patterns {
+			if HasChinese(CheckToUtf8(patterns[i])) {
+				flag = false
+			}
+		}
+	}
+	// no need to transform, for performance considerations.
+	if flag {
+		o.Coding = ""
+		o.CodingInput = ""
+	}
+}
+
 // Apply processes user provided options
 func (o *Options) Apply(patterns []string, targets []string) error {
 	if err := o.processTypes(); err != nil {
@@ -347,6 +365,7 @@ func (o *Options) Apply(patterns []string, targets []string) error {
 		o.Replace = `$0`
 	}
 
+	o.checkCoding(patterns)
 	for i := range patterns {
 		patterns[i] = o.preparePattern(patterns[i])
 	}
